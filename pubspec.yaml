@@ -1,5 +1,5 @@
 name: jafa
-description: "A new Flutter project."
+description: "JAFA - Just Another Fitness App. A gamified workout diary that motivates you to maintain daily fitness streaks with XP, levels, and achievements."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -34,6 +34,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  
+  # Image handling
+  image_picker: ^1.0.4
+  
+  # Local storage
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  path_provider: ^2.1.1
+  
+  # Date and time utilities
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
