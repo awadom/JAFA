@@ -29,7 +29,7 @@ class LevelUpDialog extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -55,7 +55,7 @@ class LevelUpDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Level ${previousLevel} → Level ${stats.level}',
+              'Level $previousLevel → Level ${stats.level}',
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -66,7 +66,7 @@ class LevelUpDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -134,7 +134,7 @@ class LevelUpDialog extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

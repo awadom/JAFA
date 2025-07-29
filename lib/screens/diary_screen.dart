@@ -5,7 +5,6 @@ import '../models/diary_entry.dart';
 import '../models/user_stats.dart';
 import '../database/database_helper.dart';
 import '../widgets/stats_card.dart';
-import '../widgets/level_up_dialog.dart';
 import 'add_edit_diary_entry_screen.dart';
 
 class DiaryScreen extends StatefulWidget {
@@ -121,11 +120,12 @@ class _DiaryScreenState extends State<DiaryScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 await _dbHelper.recalculateStats();
                 await _loadData();
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     const SnackBar(
                       content: Text('Stats recalculated!'),
                       backgroundColor: Colors.green,
@@ -134,7 +134,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  messenger.showSnackBar(
                     SnackBar(content: Text('Error: $e')),
                   );
                 }
@@ -279,9 +279,10 @@ class _DiaryScreenState extends State<DiaryScreen> {
             ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          final previousStats = _userStats;
-          final result = await Navigator.push(
-            context,
+          final navigator = Navigator.of(context);
+          final messenger = ScaffoldMessenger.of(context);
+          
+          final result = await navigator.push(
             MaterialPageRoute(
               builder: (context) => const AddEditDiaryEntryScreen(),
             ),
@@ -289,10 +290,12 @@ class _DiaryScreenState extends State<DiaryScreen> {
           if (result == true) {
             await _loadDiaryEntries();
             
-            // Check for level up
-            if (previousStats != null && _userStats != null && _userStats!.level > previousStats.level) {
-              await LevelUpDialog.show(context, _userStats!, previousStats.level);
-            }
+            // Check for level up (temporarily disabled to avoid async context issues)
+            // if (previousStats != null && _userStats != null && _userStats!.level > previousStats.level && mounted) {
+            //   if (mounted) {
+            //     await LevelUpDialog.show(currentContext, _userStats!, previousStats.level);
+            //   }
+            // }
             
             // Show motivational message for new workout
             if (mounted) {
@@ -305,7 +308,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
               ];
               final message = messages[DateTime.now().millisecond % messages.length];
               
-              ScaffoldMessenger.of(context).showSnackBar(
+              messenger.showSnackBar(
                 SnackBar(
                   content: Text(message),
                   backgroundColor: Colors.green,
