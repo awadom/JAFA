@@ -45,7 +45,8 @@ class DatabaseHelper {
       ''');
 
       // Insert initial user stats if table is empty
-      final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM user_stats'));
+      final countResult = await db.rawQuery('SELECT COUNT(*) as count FROM user_stats');
+      final count = countResult.first['count'] as int;
       if (count == 0) {
         await db.insert('user_stats', {
           'id': 1,
@@ -229,12 +230,21 @@ class DatabaseHelper {
       updatedStats = updatedStats.levelUp();
     }
     
-    await db.update(
-      'user_stats',
-      updatedStats.toMap(),
-      where: 'id = ?',
-      whereArgs: [1],
-    );
+    // Use INSERT OR REPLACE to ensure the record is updated
+    await db.execute('''
+      INSERT OR REPLACE INTO user_stats (
+        id, currentStreak, longestStreak, totalWorkouts, 
+        lastWorkoutDate, level, xp
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', [
+      1,
+      updatedStats.currentStreak,
+      updatedStats.longestStreak,
+      updatedStats.totalWorkouts,
+      updatedStats.lastWorkoutDate?.millisecondsSinceEpoch,
+      updatedStats.level,
+      updatedStats.xp,
+    ]);
   }
 
   Future<List<DiaryEntry>> getAllDiaryEntries() async {
@@ -303,5 +313,26 @@ class DatabaseHelper {
     
     // Reinitialize
     _database = await _initDatabase();
+  }
+
+  // Method to recalculate stats based on existing diary entries
+  Future<void> recalculateStats() async {
+    final db = await database;
+    
+    // Reset stats to default
+    await db.execute('''
+      INSERT OR REPLACE INTO user_stats (
+        id, currentStreak, longestStreak, totalWorkouts, 
+        lastWorkoutDate, level, xp
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', [1, 0, 0, 0, null, 1, 0]);
+    
+    // Get all diary entries ordered by date
+    final entries = await getAllDiaryEntries();
+    
+    // Recalculate stats for each entry
+    for (final entry in entries.reversed) { // Process oldest first
+      await _updateUserStatsAfterWorkout(entry.date);
+    }
   }
 }

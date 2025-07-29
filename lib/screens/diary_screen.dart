@@ -116,6 +116,32 @@ class _DiaryScreenState extends State<DiaryScreen> {
       appBar: AppBar(
         title: const Text('Workout Diary'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          // Temporary debug button to recalculate stats
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              try {
+                await _dbHelper.recalculateStats();
+                await _loadData();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Stats recalculated!'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -200,7 +226,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        DateFormat('MMM dd, yyyy - h:mm a').format(entry.date),
+                                        DateFormat('M/d/yyyy - h:mm a').format(entry.date),
                                         style: const TextStyle(
                                           fontSize: 14,
                                           color: Colors.grey,

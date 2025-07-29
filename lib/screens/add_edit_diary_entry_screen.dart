@@ -312,7 +312,7 @@ class _AddEditDiaryEntryScreenState extends State<AddEditDiaryEntryScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${widget.entry!.date.day}/${widget.entry!.date.month}/${widget.entry!.date.year} at ${DateFormat('h:mm a').format(widget.entry!.date)}',
+                  DateFormat('M/d/yyyy \'at\' h:mm a').format(widget.entry!.date),
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
